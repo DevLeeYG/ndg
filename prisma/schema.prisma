@@ -1,0 +1,37 @@
+enum Role {
+  USER
+  ADMIN
+}
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+}
+model Account {
+  id                       String  @id @default(uuid())
+  type                     String
+  provider                 String
+  providerAccountId        String
+  userId                   String
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token            String?
+  refresh_token_expires_in Int?
+  access_token             String?
+  expires_in               Int?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  @@unique([provider, providerAccountId])
+}
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  expires      DateTime
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
