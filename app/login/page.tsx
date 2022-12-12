@@ -2,13 +2,19 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import UserCard from "../userCard";
 export default function Login() {
-  {
-    /**
-    get session from nextAuth
-    if the user exists -> show a Sign Out button and their infomation
-    if a user doesn't exist -> show a Sign In button
- */
-  }
+  const login = async (e: any) => {
+    // 원래 실행되는 이벤트 취소
+    e.preventDefault();
+    // Form 안에서 이메일, 패스워드 가져오기
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const response = await signIn("email-password-credential", {
+      email,
+      password,
+      redirect: false,
+    });
+    console.log(response);
+  };
   const { data: session } = useSession();
 
   if (session) {
@@ -23,6 +29,17 @@ export default function Login() {
     <>
       <button onClick={() => signIn("kakao")}>Kakao</button>
       <button onClick={() => signIn("google")}>Google</button>
+      <form onSubmit={login}>
+        <label>
+          이메일 :
+          <input type="email" name="email" placeholder="test@test.com" />
+        </label>
+        <label>
+          비밀번호 :
+          <input type="password" name="password" />
+        </label>
+        <button type="submit">로그인</button>
+      </form>
     </>
   );
 }

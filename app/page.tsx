@@ -1,8 +1,11 @@
+import Navbar from "../components/Navbar";
 import "../styles/globals.css";
 import Login from "./login/page";
-
+("use client");
 export default function Page() {
   return (
-    <div style={{ width: "500px", margin: "0 auto", paddingTop: "30px" }}></div>
+    <div>
+      <Navbar />
+    </div>
   );
 }
