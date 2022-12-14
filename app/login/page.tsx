@@ -1,7 +1,9 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
 import UserCard from "../userCard";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 export default function Login() {
+  const router = useRouter();
   const login = async (e: any) => {
     // 원래 실행되는 이벤트 취소
     e.preventDefault();
@@ -12,15 +14,16 @@ export default function Login() {
       email,
       password,
       redirect: false,
+      callbackUrl: "http://localhost:3000/user",
     });
-    console.log(response);
+    console.log("@@@###", response);
   };
   const { data: session } = useSession();
 
+  console.log("@@@@", session);
   if (session) {
     return (
       <>
-        반갑습니다 {session.user?.name}님<br />
         <button onClick={() => signOut()}>Sign out</button>
       </>
     );

@@ -30,11 +30,29 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: Record<any, any>, req: NextApiRequest) {
-        return credentials;
+        const email = credentials.email;
+        const password = credentials.password;
+        if (email === "test@test.com" && password === "test") {
+          return credentials;
+        }
+        throw new Error("아이디 혹은 패스워드가 틀립니다.");
       },
     }),
   ],
   pages: {
     signIn: "/login",
+  },
+  callbacks: {
+    async jwt({ token, user, account, profile, isNewUser }) {
+      token.userId = 123;
+      token.test = "test";
+      console.log("token", token);
+      return token;
+    },
+    async session({ session, token, user }) {
+      console.log("session######################", session, user, token);
+      // console.log("userOrToken", userOrToken);
+      return session;
+    },
   },
 });
