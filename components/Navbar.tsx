@@ -32,16 +32,6 @@ const Navbar = () => {
               </a>
             </div>
           )}
-          {/* mobile menu */}
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setMenuToggle(!menuToggle)}>
-              {menuToggle ? (
-                <div className="w-6 h-6" />
-              ) : (
-                <div className="w-6 h-6" />
-              )}
-            </button>
-          </div>
         </div>
       </div>
     </nav>

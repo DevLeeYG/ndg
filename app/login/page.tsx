@@ -1,6 +1,5 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
-import UserCard from "../userCard";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 export default function Login() {
   const router = useRouter();
@@ -20,7 +19,6 @@ export default function Login() {
   };
   const { data: session } = useSession();
 
-  console.log("@@@@", session);
   if (session) {
     return (
       <>
