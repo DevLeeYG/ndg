@@ -18,14 +18,6 @@ const {
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    // GoogleProvider({
-    //   clientId: GOOGLE_ID,
-    //   clientSecret: GOOGLE_SECRET,
-    // }),
-    // KakaoProvider({
-    //   clientId: KAKAO_CLIENT_ID,
-    //   clientSecret: KAKAO_CLIENT_SECRET,
-    // }),
     CredentialsProvider({
       // 수정
       id: "email-password-credential",
@@ -45,6 +37,9 @@ export default NextAuth({
             password: true,
           },
         });
+        if (!user) {
+          throw new Error("존재하지 않는 아이디입니다");
+        }
       },
     }),
   ],
@@ -65,3 +60,11 @@ export default NextAuth({
     },
   },
 });
+// GoogleProvider({
+//   clientId: GOOGLE_ID,
+//   clientSecret: GOOGLE_SECRET,
+// }),
+// KakaoProvider({
+//   clientId: KAKAO_CLIENT_ID,
+//   clientSecret: KAKAO_CLIENT_SECRET,
+// }),
