@@ -13,11 +13,12 @@ export default function Login() {
       email,
       password,
       redirect: false,
-      callbackUrl: "http://localhost:3000/user",
     });
-    console.log("@@@###", response);
+    console.log(response);
   };
+
   const { data: session } = useSession();
+  console.log("@@@@@@!#!#!#!@", session);
 
   if (session) {
     return (
@@ -28,8 +29,6 @@ export default function Login() {
   }
   return (
     <>
-      <button onClick={() => signIn("kakao")}>Kakao</button>
-      <button onClick={() => signIn("google")}>Google</button>
       <form onSubmit={login}>
         <label>
           이메일 :

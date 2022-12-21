@@ -1,13 +1,10 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "../../../lib/prismadb";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextApiRequest } from "next";
-import { PrismaClient } from "@prisma/client";
-
-const prismaCli = new PrismaClient();
+import axios from "axios";
 
 const {
   GOOGLE_ID = "",
@@ -16,7 +13,6 @@ const {
   KAKAO_CLIENT_SECRET = "",
 } = process.env;
 export default NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       // 수정
@@ -28,18 +24,12 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: Record<any, any>, req: NextApiRequest) {
-        const user = await prismaCli.user.findUnique({
-          where: {
-            email: credentials!.email,
-          },
-          select: {
-            email: true,
-            password: true,
-          },
+        const user = await axios.post(`http://localhost:3000/api/auth/login`, {
+          email: credentials.email,
+          password: credentials.password,
         });
-        if (!user) {
-          throw new Error("존재하지 않는 아이디입니다");
-        }
+
+        return credentials;
       },
     }),
   ],
@@ -47,15 +37,16 @@ export default NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }) {
-      token.userId = 123;
-      token.test = "test";
-      console.log("token", token);
+    async jwt({ token, account, isNewUser, user }) {
+      // Persist the OAuth access_token to the token right after signin
+      console.log("!@$@$!$!@$!$!@$!", token);
+      console.log("!@$@$!$!@$!$!@$!", account);
+      console.log("!@$@$!$!@$!$!@$!", isNewUser);
+      console.log("!@$@$!$!@$!$!@$!", user);
       return token;
     },
     async session({ session, token, user }) {
-      console.log("session######################", session, user, token);
-      // console.log("userOrToken", userOrToken);
+      // Send properties to the client, like an access_token from a provider.
       return session;
     },
   },

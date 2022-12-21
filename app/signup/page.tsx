@@ -4,6 +4,9 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 
+
+
+
 export default function signUp() {
   const router = useRouter();
   const signup = async (e: any) => {
@@ -12,7 +15,7 @@ export default function signUp() {
     // Form 안에서 이메일, 패스워드 가져오기
     const email = e.target.email.value;
     const password = e.target.password.value;
-    const response = await axios.post("http://api.localhost:3000/api/signup", {
+    const response = await axios.post("http://localhost:3000/api/auth/signup", {
       email,
       password,
     });
