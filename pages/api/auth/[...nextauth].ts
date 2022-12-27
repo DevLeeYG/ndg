@@ -5,7 +5,7 @@ import KakaoProvider from "next-auth/providers/kakao";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextApiRequest } from "next";
 import axios from "axios";
-
+// http://localhost:3000/api/auth/session?update
 const {
   GOOGLE_ID = "",
   GOOGLE_SECRET = "",
@@ -33,23 +33,23 @@ export default NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/login",
   },
   callbacks: {
     async jwt({ token, account, isNewUser, user }) {
       // Persist the OAuth access_token to the token right after signin
-      console.log("!@$@$!$!@$!$!@$!", token);
-      console.log("!@$@$!$!@$!$!@$!", account);
-      console.log("!@$@$!$!@$!$!@$!", isNewUser);
-      console.log("!@$@$!$!@$!$!@$!", user);
+
       return token;
     },
     async session({ session, token, user }) {
+      console.log("@@@@@", session);
       // Send properties to the client, like an access_token from a provider.
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 });
 // GoogleProvider({
 //   clientId: GOOGLE_ID,

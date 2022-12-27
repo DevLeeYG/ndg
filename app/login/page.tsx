@@ -18,11 +18,11 @@ export default function Login() {
   };
 
   const { data: session } = useSession();
-  console.log("@@@@@@!#!#!#!@", session);
-
+  console.log("1231312313", session?.user?.email);
   if (session) {
     return (
       <>
+        안녕하세요 {session?.user?.email} 님
         <button onClick={() => signOut()}>Sign out</button>
       </>
     );
@@ -31,7 +31,6 @@ export default function Login() {
     <>
       <form onSubmit={login}>
         <label>
-          이메일 :
           <input type="email" name="email" placeholder="test@test.com" />
         </label>
         <label>
