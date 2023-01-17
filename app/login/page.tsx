@@ -2,7 +2,6 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 export default function Login() {
-  const router = useRouter();
   const login = async (e: any) => {
     // 원래 실행되는 이벤트 취소
     e.preventDefault();
@@ -18,11 +17,11 @@ export default function Login() {
   };
 
   const { data: session } = useSession();
-  console.log("1231312313", session?.user?.email);
+  console.log("1231312313", session);
   if (session) {
     return (
       <>
-        안녕하세요 {session?.user?.email} 님
+        안녕하세요 {session?.user?.name} 님
         <button onClick={() => signOut()}>Sign out</button>
       </>
     );
@@ -30,14 +29,20 @@ export default function Login() {
   return (
     <>
       <form onSubmit={login}>
-        <label>
+        {/* <label>
           <input type="email" name="email" placeholder="test@test.com" />
         </label>
         <label>
           비밀번호 :
           <input type="password" name="password" />
         </label>
-        <button type="submit">로그인</button>
+        <button type="submit">로그인</button> */}
+        <button type="button" onClick={() => signIn("google")}>
+          Google
+        </button>
+        <button type="button" onClick={() => signIn("kakao")}>
+          kakao
+        </button>
       </form>
     </>
   );

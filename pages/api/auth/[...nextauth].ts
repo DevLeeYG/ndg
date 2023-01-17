@@ -1,11 +1,9 @@
+import { JWT } from "next-auth/jwt";
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
+import { URLSearchParams } from "url";
 
-import CredentialsProvider from "next-auth/providers/credentials";
-import { NextApiRequest } from "next";
-import axios from "axios";
-// http://localhost:3000/api/auth/session?update
 const {
   GOOGLE_ID = "",
   GOOGLE_SECRET = "",
@@ -14,23 +12,13 @@ const {
 } = process.env;
 export default NextAuth({
   providers: [
-    CredentialsProvider({
-      // 수정
-      id: "email-password-credential",
-      name: "Credentials",
-      type: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email", placeholder: "test@test.com" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials: Record<any, any>, req: NextApiRequest) {
-        const user = await axios.post(`http://localhost:3000/api/auth/login`, {
-          email: credentials.email,
-          password: credentials.password,
-        });
-
-        return credentials;
-      },
+    GoogleProvider({
+      clientId: GOOGLE_ID,
+      clientSecret: GOOGLE_SECRET,
+    }),
+    KakaoProvider({
+      clientId: KAKAO_CLIENT_ID,
+      clientSecret: KAKAO_CLIENT_SECRET,
     }),
   ],
 
@@ -38,24 +26,81 @@ export default NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, account, isNewUser, user }) {
-      // Persist the OAuth access_token to the token right after signin
+    async jwt({ token, user, account }: any) {
+      // Initial sign in
+      if (account && user) {
+        console.log("refresh", token);
+        return {
+          accessToken: account?.access_token,
+          accessTokenExpires: Date.now() + account.expires_at * 1000,
+          refreshToken: account?.id_token,
+          user,
+        };
+      }
 
-      return token;
+      // Return previous token if the access token has not expired yet
+      if (Date.now() < token?.accessTokenExpires) {
+        return token;
+      }
+
+      // Access token has expired, try to update it
     },
-    async session({ session, token, user }) {
-      console.log("@@@@@", session);
-      // Send properties to the client, like an access_token from a provider.
+    async session({ session, token }: { session: any; token: any }) {
+      session.user = token.user;
+      session.accessToken = token.accessToken;
+      session.error = token.error;
+
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
-// GoogleProvider({
-//   clientId: GOOGLE_ID,
-//   clientSecret: GOOGLE_SECRET,
+
+// CredentialsProvider({
+//   // 수정
+//   id: "email-password-credential",
+//   name: "Credentials",
+//   type: "credentials",
+//   credentials: {
+//     email: { label: "Email", type: "email", placeholder: "test@test.com" },
+//     password: { label: "Password", type: "password" },
+//   },
+//   async authorize(credentials: Record<any, any>, req: NextApiRequest) {
+//     const user = await axios.post(
+//       `${process.env.NEXTAUTH_URL}/api/auth/login`,
+//       {
+//         email: credentials.email,
+//         password: credentials.password,
+//       }
+//     );
+//     console.log("ACCESS", user.data.access_token);
+//     const email = user.data;
+//     const status = user.status;
+//     if (email === credentials.email || status == 200) return credentials;
+//     else "로그인 실패";
+//   },
 // }),
-// KakaoProvider({
-//   clientId: KAKAO_CLIENT_ID,
-//   clientSecret: KAKAO_CLIENT_SECRET,
-// }),
+
+// async function refreshAccessToken(token: any) {
+//   console.log("UPDATE");
+//   const refresh = await axios
+//     .post("/token/refresh/", {
+//       refresh: token.refreshToken,
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+//   if (refresh && refresh.status === 200 && refresh.data.access) {
+//     return {
+//       ...token,
+//       accessToken: refresh.data.access,
+//       expiresAt: Date.now() + 10 * 1000,
+//     };
+//   }
+//   return {
+//     ...token,
+//     error: "RefreshAccessTokenError",
+//   };
+// }
+
+// http://localhost:3000/api/auth/session?update
