@@ -1,7 +1,15 @@
 "use client";
+import axios from "axios";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+
 export default function Login() {
+  const params = {
+    key: process.env.KAKAO_CLIENT_ID,
+  };
+
+  console.log(params.key);
+
   const login = async (e: any) => {
     // 원래 실행되는 이벤트 취소
     e.preventDefault();
@@ -13,9 +21,19 @@ export default function Login() {
       password,
       redirect: false,
     });
-    console.log(response);
+    console.log("1414141", response);
   };
 
+  async function getData() {
+    window.location.assign(
+      `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`
+    );
+
+    // The return value is *not* serialized
+    // You can return Date, Map, Set, etc.
+
+    // Recommendation: handle errors
+  }
   const { data: session } = useSession();
   console.log("1231312313", session);
   if (session) {
@@ -29,6 +47,7 @@ export default function Login() {
   return (
     <>
       <form onSubmit={login}>
+        <div onClick={getData}>asdf</div>
         {/* <label>
           <input type="email" name="email" placeholder="test@test.com" />
         </label>
