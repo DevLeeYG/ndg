@@ -1,16 +1,17 @@
 import NextAuth from "next-auth/next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "../../../lib/prismadb";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { PrismaClient } from "@prisma/client";
 
-const prismaCli = new PrismaClient();
+const prisma = new PrismaClient();
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log("reqreq", req.body);
   if (req.method === "POST") {
-    const user = await prismaCli.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: req.body.email,
       },
@@ -20,7 +21,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
     if (!user) {
-      await prismaCli.user.create({
+      await prisma.user.create({
         data: {
           email: req.body.email,
           password: req.body.email,
